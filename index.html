@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#05070a">
+  <meta name="description" content="NEW SYSTEM – moderner interaktiver System-Prototyp">
+  <title>NEW SYSTEM</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="noise"></div>
+  <header class="topbar">
+    <a class="brand" href="#start" aria-label="NEW SYSTEM Startseite">
+      <span class="brand-mark">N</span>
+      <span><b>NEW</b><small>SYSTEM</small></span>
+    </a>
+    <nav>
+      <a href="#system">System</a><a href="#apps">Apps</a><a href="#video">Vorschau</a><a href="#info">Info</a>
+    </nav>
+    <button class="pill" id="themeBtn">◐ <span>Ansicht</span></button>
+  </header>
+
+  <main id="start">
+    <section class="hero">
+      <div class="hero-copy">
+        <div class="eyebrow"><i></i> NEUES SYSTEM · WEB-PROTOTYP</div>
+        <h1>Ein System.<br><span>Neu gedacht.</span></h1>
+        <p>Eine clean gehaltene, interaktive Vorschau von <strong>NEW SYSTEM</strong> – mit Startbildschirm, Apps, Kontrollzentrum, Einstellungen und KI-Zentrale.</p>
+        <div class="hero-actions">
+          <button class="primary" data-open="system">System öffnen <b>→</b></button>
+          <button class="secondary" data-open="video">Vorschau ansehen <b>▶</b></button>
+        </div>
+        <div class="stats"><span><b>100%</b><small>Web-Demo</small></span><span><b>DE</b><small>Sprache</small></span><span><b>LIVE</b><small>Interaktiv</small></span></div>
+      </div>
+      <div class="hero-device">
+        <div class="glow"></div>
+        <div class="device">
+          <div class="device-camera"></div>
+          <div class="screen" id="miniScreen">
+            <div class="status"><span id="miniTime">21:00</span><span>⌁　▣　100%</span></div>
+            <div class="mini-welcome">Guten Abend<span>Was möchtest du tun?</span></div>
+            <div class="mini-grid">
+              <button data-app="KI">✦<small>KI</small></button><button data-app="Fotos">▣<small>Fotos</small></button>
+              <button data-app="Dateien">⌁<small>Dateien</small></button><button data-app="Einstellungen">⚙<small>Einstellungen</small></button>
+            </div>
+            <div class="dock"><b>☎</b><b>◉</b><b>▤</b><b>⌕</b></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="system">
+      <div class="section-head"><div><span class="eyebrow">SYSTEMZENTRALE</span><h2>Alles an einem Ort.</h2></div><p>Tippe auf die Bereiche und erlebe die Oberfläche direkt im Browser.</p></div>
+      <div class="system-layout">
+        <div class="control-panel">
+          <div class="panel-top"><span>NEW SYSTEM</span><b id="clock">21:00</b></div>
+          <div class="greeting">Hallo 👋<small>Dein System ist bereit.</small></div>
+          <div class="quick-grid">
+            <button class="quick active">◉<span>WLAN</span><small>Verbunden</small></button>
+            <button class="quick active">⌁<span>Bluetooth</span><small>Bereit</small></button>
+            <button class="quick">☾<span>Ruhe</span><small>Aus</small></button>
+            <button class="quick">▣<span>Helligkeit</span><small>Automatisch</small></button>
+          </div>
+          <div class="slider"><span>Helligkeit</span><input type="range" value="72"></div>
+          <div class="slider"><span>Lautstärke</span><input type="range" value="58"></div>
+          <div class="now-playing"><span class="album">♫</span><div><b>Keine Wiedergabe</b><small>Mediensteuerung</small></div><button>▶</button></div>
+        </div>
+        <div class="feature-grid">
+          <article class="feature" data-app="KI"><span class="icon">✦</span><div><h3>KI-Zentrale</h3><p>Assistent, Suche und Systemhilfe in einer Oberfläche.</p></div><b>→</b></article>
+          <article class="feature" data-app="Fotos"><span class="icon">▣</span><div><h3>Fotos</h3><p>Eine ruhige Galerie mit klarer Navigation.</p></div><b>→</b></article>
+          <article class="feature" data-app="Dateien"><span class="icon">⌁</span><div><h3>Dateien</h3><p>Dateien, Ordner und zuletzt verwendet auf einen Blick.</p></div><b>→</b></article>
+          <article class="feature" data-app="Einstellungen"><span class="icon">⚙</span><div><h3>Einstellungen</h3><p>System, Darstellung, Datenschutz und Geräteoptionen.</p></div><b>→</b></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="apps">
+      <div class="section-head"><div><span class="eyebrow">APP-BEREICH</span><h2>Deine Oberfläche.</h2></div><p>Alle wichtigen Bereiche sind als interaktive Demo angelegt.</p></div>
+      <div class="apps-grid">
+        <button class="app-card" data-app="KI"><span class="app-icon">✦</span><b>KI</b><small>Assistent</small></button>
+        <button class="app-card" data-app="Fotos"><span class="app-icon">▣</span><b>Fotos</b><small>Galerie</small></button>
+        <button class="app-card" data-app="Dateien"><span class="app-icon">⌁</span><b>Dateien</b><small>Explorer</small></button>
+        <button class="app-card" data-app="Musik"><span class="app-icon">♫</span><b>Musik</b><small>Player</small></button>
+        <button class="app-card" data-app="Browser"><span class="app-icon">◌</span><b>Browser</b><small>Internet</small></button>
+        <button class="app-card" data-app="Einstellungen"><span class="app-icon">⚙</span><b>Einstellungen</b><small>System</small></button>
+      </div>
+    </section>
+
+    <section class="section" id="video">
+      <div class="section-head"><div><span class="eyebrow">PREVIEW</span><h2>So fühlt sich NEW SYSTEM an.</h2></div><p>Animierte Produktvorschau – ohne Änderungen an deinem Gerät.</p></div>
+      <div class="video-frame">
+        <div class="video-top"><span><i></i> LIVE-VORSCHAU</span><span>NEW SYSTEM / 01</span></div>
+        <div class="preview-stage">
+          <div class="preview-phone">
+            <div class="preview-screen">
+              <div class="pv-status">21:00 <span>⌁　▣　100%</span></div>
+              <div class="pv-orb"></div>
+              <div class="pv-title">NEW SYSTEM<small>Einfach. Schnell. Klar.</small></div>
+              <div class="pv-cards"><span>✦<b>KI</b></span><span>▣<b>Fotos</b></span><span>⌁<b>Dateien</b></span></div>
+              <div class="pv-line"></div>
+              <div class="pv-dock">☎　◉　▤　⌕</div>
+            </div>
+          </div>
+          <div class="preview-copy"><span class="eyebrow">SZENE 01</span><h3>Der Startbildschirm.</h3><p>Eine klare Oberfläche, die sich auf das konzentriert, was du gerade brauchst.</p><div class="timeline"><span></span></div><small>0:00　━━━━━━━━　0:15</small></div>
+        </div>
+        <div class="video-controls"><button id="playPreview">▶ Vorschau starten</button><span>Animierte Demo · 15 Sek.</span></div>
+      </div>
+    </section>
+
+    <section class="section" id="info">
+      <div class="info-card"><div><span class="eyebrow">NEW SYSTEM</span><h2>Ein sauberer Anfang.</h2><p>Diese Website ist ein eigenständiger Prototyp. Sie verändert weder dein Tablet noch dessen Android-System.</p></div><div class="seal">N<br><small>NEW</small></div></div>
+    </section>
+  </main>
+
+  <div class="modal" id="modal" aria-hidden="true">
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-card"><button class="close" data-close>×</button><div id="modalIcon" class="modal-icon">✦</div><span class="eyebrow" id="modalEyebrow">APP</span><h2 id="modalTitle">KI</h2><p id="modalText"></p><div class="modal-content" id="modalContent"></div></div>
+  </div>
+  <footer><span>NEW SYSTEM</span><span>Web-Prototyp · Deutsch · 2026</span></footer>
+  <script src="script.js"></script>
+</body>
+</html>
