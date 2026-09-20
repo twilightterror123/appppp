@@ -1,27 +1,26 @@
 <!doctype html>
-<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#000">
-<title>NEW AI</title><link rel="stylesheet" href="styles.css"></head>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#000"><link rel="manifest" href="manifest.json"><title>NEW AI</title><link rel="stylesheet" href="styles.css"></head>
 <body>
 <div class="layout">
 <aside class="sidebar">
   <div class="brand"><div class="logo">N</div><div>NEW AI</div></div>
   <button class="new-chat" id="newChat">＋ Neuer Chat</button>
-  <nav><button class="nav active" data-view="chat">Chat</button><button class="nav" data-view="settings">Verbindung</button><button class="nav" data-view="api">API</button><button class="nav" data-view="about">System</button></nav>
+  <nav><button class="nav active" data-view="chat">Chat</button><button class="nav" data-view="models">Modelle</button><button class="nav" data-view="api">API</button><button class="nav" data-view="about">System</button></nav>
   <div id="history" class="history"></div>
-  <div class="side-note">Schwarz. Klar. Kein Show-UI.</div>
+  <div class="side-note">Lokale KI · Schwarz · schlicht</div>
 </aside>
 <main class="main">
-<header class="topbar"><span>NEW AI</span><span id="state" class="state">nicht verbunden</span></header>
+<header class="topbar"><span>NEW AI</span><span id="state" class="state">Modell wird vorbereitet …</span></header>
 <section id="chatView" class="view chat-view">
   <div id="messages" class="messages">
-    <div class="welcome" id="welcome"><h1>Wie kann ich helfen?</h1><p>NEW AI nutzt ein konfigurierbares Sprachmodell und kann – je nach Backend – Chat, Web-Recherche, Code, Bilder und weitere Werkzeuge.</p></div>
+    <div class="welcome" id="welcome"><h1>Wie kann ich helfen?</h1><p>NEW AI läuft direkt im Browser. Beim ersten Start wird ein kleines Sprachmodell einmal geladen und danach im Browser-Cache behalten.</p><button id="start" class="start">KI starten</button><div id="progress" class="progress"></div></div>
   </div>
   <div class="composer-wrap"><div class="composer">
-    <div class="tools"><button id="web" class="tool">Web</button><button id="image" class="tool">Bild</button><label class="tool file">Datei<input id="file" type="file" hidden></label></div>
+    <div class="tools"><button id="web" class="tool" title="Öffnet eine Websuche für die aktuelle Anfrage">Web</button><button id="image" class="tool" title="Bildmodus">Bild</button><label class="tool file">Datei<input id="file" type="file" hidden></label></div>
     <textarea id="input" rows="1" placeholder="Nachricht …"></textarea>
     <div class="bottom"><span>Enter senden · Shift+Enter Zeile</span><button id="send" class="send">↑</button></div>
   </div></div>
 </section>
 <section id="panelView" class="view hidden"></section>
 </main></div>
-<script src="app.js"></script></body></html>
+<script type="module" src="app.js"></script></body></html>
