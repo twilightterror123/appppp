@@ -1,20 +1,10 @@
 const $=s=>document.querySelector(s), $$=s=>document.querySelectorAll(s);
-const data={
- KI:{icon:"✦",title:"KI-Zentrale",text:"Deine zentrale Oberfläche für Assistent, Suche und Systemhilfe.",content:"<strong>Bereit.</strong><br>Stelle später Fragen, suche Inhalte oder steuere Funktionen über eine einheitliche Oberfläche."},
- Fotos:{icon:"▣",title:"Fotos",text:"Eine ruhige Galerie für deine Bilder.",content:"<strong>Galerie-Demo</strong><br>In einer späteren echten App können hier freigegebene Bilder des Geräts angezeigt werden."},
- Dateien:{icon:"⌁",title:"Dateien",text:"Dateien und Ordner übersichtlich organisiert.",content:"<strong>Dateiübersicht</strong><br>Start · Bilder · Downloads · Dokumente<br><br>Diese Web-Demo greift nicht auf private Tablet-Dateien zu."},
- Musik:{icon:"♫",title:"Musik",text:"Ein minimalistischer Player für deine Musik.",content:"<strong>Keine Wiedergabe</strong><br>Wähle später einen Titel und steuere Wiedergabe, Lautstärke und Fortschritt."},
- Browser:{icon:"◌",title:"Browser",text:"Schneller Zugang zum Internet.",content:"<strong>Web</strong><br>Der Prototyp bleibt bewusst lokal und enthält keine fremden Webseiten im Systemfenster."},
- Einstellungen:{icon:"⚙",title:"Einstellungen",text:"System, Darstellung und Datenschutz an einem Ort.",content:"<strong>Darstellung</strong><br>Animationen · Helligkeit · Sprache Deutsch<br><br><strong>Datenschutz</strong><br>Die Website verändert kein Android-System."}
-};
-function openApp(name){const d=data[name]||data.KI;$("#modalIcon").textContent=d.icon;$("#modalEyebrow").textContent="APP · NEW SYSTEM";$("#modalTitle").textContent=d.title;$("#modalText").textContent=d.text;$("#modalContent").innerHTML=d.content;$("#modal").classList.add("open");$("#modal").setAttribute("aria-hidden","false")}
-function closeModal(){$("#modal").classList.remove("open");$("#modal").setAttribute("aria-hidden","true")}
-$$("[data-app]").forEach(el=>el.addEventListener("click",()=>openApp(el.dataset.app)));
-$$("[data-close]").forEach(el=>el.addEventListener("click",closeModal));
-$$("[data-open]").forEach(el=>el.addEventListener("click",()=>document.getElementById(el.dataset.open).scrollIntoView({behavior:"smooth"})));
-document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});
-function time(){const d=new Date(),s=d.toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"});$("#clock").textContent=s;$("#miniTime").textContent=s}
-time();setInterval(time,1000);
-$("#themeBtn").addEventListener("click",()=>{document.body.classList.toggle("bright");$("#themeBtn").querySelector("span").textContent=document.body.classList.contains("bright")?"Dunkel":"Ansicht"});
-$("#playPreview").addEventListener("click",()=>{const b=$("#playPreview");b.textContent="✓ Vorschau läuft";setTimeout(()=>b.textContent="▶ Vorschau starten",4500)});
-$$(".quick").forEach(q=>q.addEventListener("click",()=>q.classList.toggle("active")));
+const apps={KI:["✦","KI","Der visuelle KI-Bereich von NEW SYSTEM."],Fotos:["▧","Fotos","Alben, Bilder und Medien – in einem echten Android-Build über erlaubte Medien-APIs."],Dateien:["▤","Dateien","Dateimanager für Speicher, Ordner und Downloads."],Musik:["♫","Musik","Musikplayer mit Wiedergabe und Bibliothek."],Browser:["◎","Browser","Webzugang innerhalb des System-Prototyps."],Telefon:["☎","Telefon","Telefon-Oberfläche und Kontakte."],Nachrichten:["▣","Nachrichten","Nachrichten und Chats."],Kamera:["◉","Kamera","Kamera-Oberfläche für einen späteren Android-Build."],Einstellungen:["⚙","Einstellungen","Systemeinstellungen, Berechtigungen und Geräteoptionen."]};
+function clock(){const d=new Date(),t=d.toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"});["#time","#sysTime"].forEach(x=>{const e=$(x);if(e)e.textContent=t})}setInterval(clock,1000);clock();
+function openApp(name){const a=apps[name]||["✦",name,"NEW SYSTEM"];$("#modalIcon").textContent=a[0];$("#modalTitle").textContent=a[1];$("#modalText").textContent=a[2];$("#modalList").innerHTML=["Übersicht","Letzte Elemente","Optionen","Berechtigungen"].map(x=>"<div>› "+x+"</div>").join("");$("#modal").classList.add("open")}
+$$("[data-app]").forEach(b=>b.addEventListener("click",()=>openApp(b.dataset.app)));
+$("#close").onclick=()=>$("#modal").classList.remove("open");$("#modal").addEventListener("click",e=>{if(e.target.id==="modal")$("#modal").classList.remove("open")});
+$$("[data-toggle]").forEach(b=>b.onclick=()=>{b.classList.toggle("active");b.querySelector("span").textContent=b.classList.contains("active")?"Aktiv":"Aus"});
+function build(){const term=$("#terminal"),state=$("#buildState"),lines=["› Build gestartet …","› Systemkern-Oberfläche wird vorbereitet …","› Startbildschirm erstellt.","› Schnelleinstellungen erstellt.","› Apps registriert.","› Dateien / Fotos / Musik vorbereitet.","› Deutsche Systemtexte geladen.","› Start-Animation eingebunden.","› Prüfung: Demo bereit.","✓ NEW SYSTEM wurde gebaut."];term.innerHTML="";state.textContent="BAUT …";lines.forEach((line,i)=>setTimeout(()=>{term.innerHTML+="<p>"+line+"</p>";term.scrollTop=term.scrollHeight;if(i===lines.length-1)state.textContent="FERTIG"},i*240))}
+$("#build").onclick=()=>{build();location.hash="builder"};$("#build2").onclick=build;$("#launch").onclick=()=>{document.querySelector("#boot").classList.remove("hide");setTimeout(()=>document.querySelector("#boot").classList.add("hide"),1400)};
+setTimeout(()=>$("#boot").classList.add("hide"),1800);
