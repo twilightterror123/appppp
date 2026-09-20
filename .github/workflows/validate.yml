@@ -1,0 +1,24 @@
+name: Validate NEW AI
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: pip install -r server/requirements.txt
+      - run: python -m compileall server
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          test -f index.html
+          test -f styles.css
+          test -f app.js
+          grep -q "v1/chat/completions" app.js
