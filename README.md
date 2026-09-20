@@ -1,18 +1,21 @@
 # NEW SYSTEM
 
-Moderner deutschsprachiger Web-Prototyp für **NEW SYSTEM**.
-
-## Start
-Einfach `index.html` öffnen oder das Repository mit Vercel verbinden.
+Kompletter deutschsprachiger Web-Prototyp für ein eigenes Android-artiges System.
 
 ## Enthalten
-- Interaktive Systemzentrale
-- App-Bereich
-- KI-, Fotos-, Dateien-, Musik-, Browser- und Einstellungs-Demos
-- Animierte Geräte-/Preview-Ansicht
-- Deutsche Oberfläche
-- Responsive Design
-- Keine Änderungen an Android oder dem angeschlossenen Gerät
+- interaktiver System-Start
+- eigener Startbildschirm
+- App-Übersicht
+- Schnelleinstellungen
+- Systemstatus
+- App-Fenster
+- Builder mit sichtbarem Build-Ablauf
+- eigene NEW-SYSTEM-Logo-Datei
+- animierte Startsequenz als eigenes Projekt-Asset
+- responsive Ansicht für Chromebook/Desktop/Handy
 
-## Hinweis
-Die Website ist ein eigenständiger Prototyp. Eine normale Website kann nicht auf private Daten oder Apps eines Tablets zugreifen, ohne dass dafür eine ausdrücklich installierte und berechtigte App/Verbindung existiert.
+## Wichtig
+Die Website ist ein sicherer Prototyp. Sie verändert kein Tablet und löscht keine Android-Daten. Eine Website kann nicht auf private Android-App-Daten zugreifen. Für einen späteren echten Android-Build müssen dafür die offiziellen Android-APIs und Berechtigungen verwendet werden.
+
+## Vercel
+Dieses Projekt ist statisch: Root-Verzeichnis, kein Build-Befehl nötig.
