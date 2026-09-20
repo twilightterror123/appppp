@@ -1,0 +1,5 @@
+fastapi
+uvicorn[standard]
+httpx
+pydantic
+ddgs==9.16.0
