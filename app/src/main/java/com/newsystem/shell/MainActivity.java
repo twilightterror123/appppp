@@ -115,7 +115,7 @@ public class MainActivity extends Activity {
             icon(c,"⌂",55,getHeight()/d()-54,26,WHITE);
             icon(c,"◫",getWidth()/d()/2,getHeight()/d()-54,25,WHITE);
             icon(c,"≡",getWidth()/d()-55,getHeight()/d()-54,25,WHITE);
-            text(c,"Wischen ↑ für Apps",getWidth()/d()/2,getHeight()/d()-7,11,MUTED,Paint.Align.CENTER);
+            text(c,"Wischen ↑ für Apps",11,MUTED,getWidth()/d()/2,getHeight()/d()-7,Paint.Align.CENTER);
         }
 
         void appIcon(Canvas c,float x,float y,String g,String label){
