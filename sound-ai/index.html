@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#000000"><title>SOUND AI</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="brand"><span class="logo">S</span><span>SOUND AI</span></div>
+  <button id="newProject" class="sideBtn">＋ Neues Projekt</button>
+  <nav>
+    <button class="nav active" data-view="studio">Studio</button>
+    <button class="nav" data-view="analysis">Analyse</button>
+    <button class="nav" data-view="history">Versionen</button>
+    <button class="nav" data-view="about">Über</button>
+  </nav>
+  <div class="sideInfo"><span class="dot"></span><span id="engineState">Bereit</span><br><span class="muted">Alles lokal im Browser</span></div>
+</aside>
+<main class="main">
+<header class="top"><div>SOUND AI</div><div id="fileState" class="muted">Keine Audiodatei</div></header>
+
+<section id="studio" class="view">
+  <div class="studioGrid">
+    <div class="left">
+      <section id="drop" class="drop card">
+        <input id="file" type="file" accept="audio/*">
+        <div class="dropBig">Audio hineinziehen</div>
+        <div class="muted">MP3 · WAV · M4A · OGG · direkte Browser-Verarbeitung</div>
+      </section>
+
+      <section class="card player" id="playerCard" hidden>
+        <div class="fileRow"><div><b id="fileName">—</b><div id="fileMeta" class="muted">—</div></div><button id="play" class="smallBtn">▶</button></div>
+        <audio id="sourceAudio" controls></audio>
+        <div class="waveWrap"><canvas id="wave"></canvas><div id="sel" class="selection"></div></div>
+        <div class="rangeGrid">
+          <label>Start <output id="startOut">0.00 s</output><input id="start" type="range" min="0" max="0" value="0" step=".01"></label>
+          <label>Ende <output id="endOut">0.00 s</output><input id="end" type="range" min="0" max="0" value="0" step=".01"></label>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="sectionHead"><h2>Auto-Mix</h2><span id="analysisBadge" class="badge">warte auf Audio</span></div>
+        <div class="presets">
+          <button data-preset="auto">AUTO</button><button data-preset="clean">CLEAN</button><button data-preset="loud">LOUD</button><button data-preset="bass">BASS</button><button data-preset="tiktok">TIKTOK</button><button data-preset="club">CLUB</button><button data-preset="slowed">SLOWED</button><button data-preset="night">NIGHTCORE</button>
+        </div>
+        <div class="meterGrid">
+          <div><span>Peak</span><b id="peak">—</b></div><div><span>RMS</span><b id="rms">—</b></div><div><span>Bass</span><b id="bassMetric">—</b></div><div><span>Bright</span><b id="brightMetric">—</b></div>
+        </div>
+      </section>
+
+      <section class="card controls">
+        <div class="sectionHead"><h2>Mix</h2><button id="autoTune" class="smallBtn">⚡ Auto</button></div>
+        <div class="controlGrid">
+          <label>Input <output id="gainOut">0 dB</output><input id="gain" type="range" min="-8" max="12" step=".5" value="0"></label>
+          <label>Bass <output id="bassOut">0 dB</output><input id="bass" type="range" min="-12" max="15" step=".5" value="0"></label>
+          <label>Mitten <output id="midOut">0 dB</output><input id="mid" type="range" min="-10" max="10" step=".5" value="0"></label>
+          <label>Höhen <output id="trebleOut">0 dB</output><input id="treble" type="range" min="-10" max="10" step=".5" value="0"></label>
+          <label>Kompressor <output id="compOut">35%</output><input id="comp" type="range" min="0" max="100" value="35"></label>
+          <label>Sättigung <output id="satOut">0%</output><input id="sat" type="range" min="0" max="100" value="0"></label>
+          <label>Limiter <output id="limitOut">90%</output><input id="limit" type="range" min="50" max="100" value="90"></label>
+          <label>Stereo <output id="stereoOut">100%</output><input id="stereo" type="range" min="0" max="150" value="100"></label>
+          <label>Reverb <output id="reverbOut">5%</output><input id="reverb" type="range" min="0" max="100" value="5"></label>
+          <label>Echo <output id="echoOut">0%</output><input id="echo" type="range" min="0" max="100" value="0"></label>
+          <label>Speed <output id="speedOut">100%</output><input id="speed" type="range" min="70" max="130" value="100"></label>
+          <label>Pitch <output id="pitchOut">0 st</output><input id="pitch" type="range" min="-6" max="6" step=".5" value="0"></label>
+          <label>Low-Cut <output id="lowcutOut">25 Hz</output><input id="lowcut" type="range" min="0" max="180" value="25"></label>
+          <label>High-Cut <output id="highcutOut">20 kHz</output><input id="highcut" type="range" min="6000" max="20000" value="20000" step="100"></label>
+        </div>
+        <div class="checks">
+          <label><input id="removeSilence" type="checkbox" checked> Leise/Leerstellen automatisch kürzen</label>
+          <label><input id="clipGuard" type="checkbox" checked> Clipping-Schutz</label>
+          <label><input id="phase" type="checkbox" checked> Stereo-Phasen-Schutz</label>
+        </div>
+        <button id="render" class="render">SOUND AI MIX RENDERN</button>
+        <div id="status" class="status">Audio laden und SOUND AI übernimmt den Rest.</div>
+      </section>
+
+      <section class="card output" id="output" hidden>
+        <div class="fileRow"><div><h2>Fertige Version</h2><div id="resultMeta" class="muted">—</div></div><a id="download" class="download" download="sound-ai-remix.wav">WAV speichern</a></div>
+        <audio id="resultAudio" controls></audio>
+        <div class="ab"><button id="sourceA">Original</button><button id="resultB">Remix</button></div>
+      </section>
+    </div>
+
+    <aside class="right">
+      <section class="card bot">
+        <div class="botHead"><div><b>SOUND AI</b><div class="muted">Sound Assistant</div></div><span class="dot"></span></div>
+        <div id="chat" class="chat"></div>
+        <div class="quick"><button data-q="mach es lauter">lauter</button><button data-q="mehr bass">mehr bass</button><button data-q="cleaner">cleaner</button><button data-q="mehr druck">mehr Druck</button><button data-q="weniger hall">weniger Hall</button></div>
+        <div class="chatInput"><input id="chatInput" placeholder="Sag SOUND AI, was ich ändern soll …"><button id="chatSend">↑</button></div>
+      </section>
+      <section class="card suggestions"><h2>Automatik</h2><div id="suggestions">Lade eine Audiodatei. Danach erstellt SOUND AI ein Sound-Profil.</div></section>
+    </aside>
+  </div>
+</section>
+
+<section id="analysis" class="view hidden page"><h2>Audio-Analyse</h2><div class="card analysisGrid"><div><span>Duration</span><b id="aDuration">—</b></div><div><span>Peak</span><b id="aPeak">—</b></div><div><span>RMS</span><b id="aRms">—</b></div><div><span>Dynamic</span><b id="aDyn">—</b></div><div><span>Bass-Anteil</span><b id="aBass">—</b></div><div><span>Helligkeit</span><b id="aBright">—</b></div><div><span>Silence</span><b id="aSilence">—</b></div><div><span>Channels</span><b id="aChannels">—</b></div></div></section>
+<section id="history" class="view hidden page"><h2>Versionen</h2><div id="historyList" class="card">Noch keine Render-Versionen.</div></section>
+<section id="about" class="view hidden page"><h2>Über SOUND AI</h2><div class="card"><p>Sound-only AI für schnelles lokales Audio-Editing und Remixing.</p><p class="muted">Die Signalverarbeitung nutzt Standard-Web-Audio-Knoten und OfflineAudioContext; dadurch können EQ, Kompression, Reverb, Delay, Sättigung und Offline-Rendering direkt im Browser laufen.</p></div></section>
+</main>
+</div>
+<script src="app.js"></script>
+</body></html>
