@@ -88,7 +88,10 @@ function analyze(buf){
 function renderWave(){const c=$("wave"),x=c.getContext("2d"),w=Math.max(800,c.clientWidth*2),h=Math.max(180,c.clientHeight*2);c.width=w;c.height=h;x.clearRect(0,0,w,h);const d=buffer.getChannelData(0),step=Math.max(1,Math.floor(d.length/w));x.beginPath();for(let i=0;i<w;i++){let mn=1,mx=-1;for(let j=0;j<step;j++){const v=d[i*step+j]||0;mn=Math.min(mn,v);mx=Math.max(mx,v)}x.moveTo(i,h/2+mn*h*.4);x.lineTo(i,h/2+mx*h*.4)}x.strokeStyle="#888";x.stroke();updateSelection()}
 function updateSelection(){if(!buffer)return;const s=+$("start").value/buffer.duration,e=+$("end").value/buffer.duration;$("sel").style.left=(s*100)+"%";$("sel").style.right=((1-e)*100)+"%"}
 async function load(f){
- if(!f||!f.type.startsWith("audio/")){msg("Bitte eine Audiodatei auswählen.");return}
+ if(!f){msg("Keine Datei ausgewählt.");return}
+ const name=String(f.name||"").toLowerCase();
+ const audioExt=/\.(mp3|wav|m4a|aac|ogg|oga|flac|opus|weba)$/i.test(name);
+ if(!f.type.startsWith("audio/")&&!audioExt){msg("Bitte eine Audio-Datei auswählen (MP3, WAV, M4A, OGG, FLAC oder OPUS).");return}
  try{
   file=f;
   await ctx.resume().catch(()=>{});
@@ -115,7 +118,7 @@ async function load(f){
       $("autoStatus").textContent="AI-Profil verbessert";
     }
   }).catch(e=>{console.warn("Audio AI:",e);$("aiState").textContent="Auto-Mix aktiv";});
- }catch(e){$("status").textContent="Audio konnte nicht geladen werden.";$( "aiState").textContent="Fehler";msg("Audio konnte nicht geladen werden: "+(e.message||e));}
+ }catch(e){$("status").textContent="Audio konnte nicht geladen werden.";$( "aiState").textContent="Fehler";msg("Audio konnte nicht geladen werden: "+(e.message||e)+". Versuch eine normale MP3/WAV-Datei.");}
 }
 function showAnalysis(){if(!analysis)return;const a=analysis;$("peak").textContent=a.peakDb.toFixed(1)+" dB";$("rms").textContent=a.rmsDb.toFixed(1)+" dB";$("bassMetric").textContent=Math.round(a.bassRatio*100)+"%";$("brightMetric").textContent=Math.round(a.brightness*100)+"%";$("aDuration").textContent=a.duration.toFixed(2)+" s";$("aPeak").textContent=a.peakDb.toFixed(2)+" dBFS";$("aRms").textContent=a.rmsDb.toFixed(2)+" dBFS";$("aDyn").textContent=a.dynamic.toFixed(2)+" dB";$("aBass").textContent=Math.round(a.bassRatio*100)+"%";$("aBright").textContent=Math.round(a.brightness*100)+"%";$("aSilence").textContent=Math.round(a.silenceRatio*100)+"%";$("aChannels").textContent=a.channels}
 async function render(){
