@@ -9,7 +9,7 @@ async function loadAudioAI(){
   try{
     const mod=await import("https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1");
     const device=navigator.gpu?"webgpu":"wasm";
-    const dtype=device==="webgpu"?"q4f16":"q4";
+    const dtype=device==="webgpu"?"fp16":"q8";
     audioAI=await mod.pipeline("audio-classification",AI_MODEL,{device,dtype,progress_callback:p=>{
       if(p?.progress!=null)$("engineState").textContent="Audio-KI "+Math.round(p.progress)+"%";
     }});
@@ -87,7 +87,36 @@ function analyze(buf){
 }
 function renderWave(){const c=$("wave"),x=c.getContext("2d"),w=Math.max(800,c.clientWidth*2),h=Math.max(180,c.clientHeight*2);c.width=w;c.height=h;x.clearRect(0,0,w,h);const d=buffer.getChannelData(0),step=Math.max(1,Math.floor(d.length/w));x.beginPath();for(let i=0;i<w;i++){let mn=1,mx=-1;for(let j=0;j<step;j++){const v=d[i*step+j]||0;mn=Math.min(mn,v);mx=Math.max(mx,v)}x.moveTo(i,h/2+mn*h*.4);x.lineTo(i,h/2+mx*h*.4)}x.strokeStyle="#888";x.stroke();updateSelection()}
 function updateSelection(){if(!buffer)return;const s=+$("start").value/buffer.duration,e=+$("end").value/buffer.duration;$("sel").style.left=(s*100)+"%";$("sel").style.right=((1-e)*100)+"%"}
-async function load(f){if(!f||!f.type.startsWith("audio/"))return;file=f;ctx.close().catch(()=>{});ctx=new AudioContext();const ab=await f.arrayBuffer();buffer=await ctx.decodeAudioData(ab.slice(0));$("playerCard").hidden=false;$("fileName").textContent=f.name;$("fileMeta").textContent=buffer.duration.toFixed(2)+" s · "+buffer.numberOfChannels+" ch · "+Math.round(buffer.sampleRate)+" Hz";$("fileState").textContent=f.name;const u=URL.createObjectURL(f);$("sourceAudio").src=u;$("start").max=buffer.duration;$("end").max=buffer.duration;$("start").value=0;$("end").value=buffer.duration;refreshOne("start");refreshOne("end");analysis=analyze(buffer);showAnalysis();renderWave();const p=aiRecipeAdjust(autoRecipe(analysis),await aiUnderstand(buffer));apply(p);$("analysisBadge").textContent="AI + Audio-Profil fertig";$("decision").hidden=false;$("advanced").hidden=true;$("suggestions").innerHTML+="<br><br><b>Auto-Mix:</b> komplette Grundmischung wurde anhand von Modell + Messwerten vorbereitet.";msg("Die echte Audio-KI ist fertig. Jetzt entscheidest du nur noch: LOUD, LOUDER, BASS, BASS BOOST oder MORE BASS.");}
+async function load(f){
+ if(!f||!f.type.startsWith("audio/")){msg("Bitte eine Audiodatei auswählen.");return}
+ try{
+  file=f;
+  await ctx.resume().catch(()=>{});
+  const ab=await f.arrayBuffer();
+  buffer=await ctx.decodeAudioData(ab.slice(0));
+  $("playerCard").hidden=false;$("fileName").textContent=f.name;
+  $("fileMeta").textContent=buffer.duration.toFixed(2)+" s · "+buffer.numberOfChannels+" ch · "+Math.round(buffer.sampleRate)+" Hz";
+  $("fileState").textContent=f.name;
+  $("sourceAudio").src=URL.createObjectURL(f);
+  $("start").max=buffer.duration;$("end").max=buffer.duration;$("start").value=0;$("end").value=buffer.duration;
+  refreshOne("start");refreshOne("end");analysis=analyze(buffer);showAnalysis();renderWave();
+  apply(autoRecipe(analysis));$("analysisBadge").textContent="Auto-Profil fertig";
+  $("decision").hidden=false;$("advanced").hidden=true;
+  $("status").textContent="Fertig vorbereitet · LOUD / LOUDER / BASS / BASS BOOST / MORE BASS wählen.";
+  $("aiState").textContent="Audio geladen · Auto-Mix bereit";
+  $("suggestions").innerHTML="<b>SOUND AI ist bereit.</b><br>Grundmix, Pitch, Speed, EQ, Lautheit, Kompression und Schutz sind automatisch vorbereitet.";
+  msg("Audio ist geladen. Der automatische Grundmix ist fertig. Wähle jetzt eine Richtung.");
+  aiUnderstand(buffer).then(labels=>{
+    if(!labels)return;
+    aiLabels=labels;
+    if(!$("decision").dataset.chosen){
+      apply(aiRecipeAdjust(autoRecipe(analysis),labels));
+      $("aiState").textContent="Echte Audio-KI fertig · Auto-Mix verbessert";
+      $("autoStatus").textContent="AI-Profil verbessert";
+    }
+  }).catch(e=>{console.warn("Audio AI:",e);$("aiState").textContent="Auto-Mix aktiv";});
+ }catch(e){$("status").textContent="Audio konnte nicht geladen werden.";$( "aiState").textContent="Fehler";msg("Audio konnte nicht geladen werden: "+(e.message||e));}
+}
 function showAnalysis(){if(!analysis)return;const a=analysis;$("peak").textContent=a.peakDb.toFixed(1)+" dB";$("rms").textContent=a.rmsDb.toFixed(1)+" dB";$("bassMetric").textContent=Math.round(a.bassRatio*100)+"%";$("brightMetric").textContent=Math.round(a.brightness*100)+"%";$("aDuration").textContent=a.duration.toFixed(2)+" s";$("aPeak").textContent=a.peakDb.toFixed(2)+" dBFS";$("aRms").textContent=a.rmsDb.toFixed(2)+" dBFS";$("aDyn").textContent=a.dynamic.toFixed(2)+" dB";$("aBass").textContent=Math.round(a.bassRatio*100)+"%";$("aBright").textContent=Math.round(a.brightness*100)+"%";$("aSilence").textContent=Math.round(a.silenceRatio*100)+"%";$("aChannels").textContent=a.channels}
 async function render(){
  if(!buffer){msg("Lade zuerst Audio.");return}const s=+$("start").value,e=+$("end").value;if(e<=s+.05){msg("Das Ende muss hinter dem Start liegen.");return}
@@ -144,7 +173,7 @@ function command(t){
 }
 $("chatSend").onclick=()=>{const t=$("chatInput").value.trim();if(t){msg(t,true);$("chatInput").value="";command(t)}};$("chatInput").onkeydown=e=>{if(e.key==="Enter")$("chatSend").click()};
 document.querySelectorAll(".quick button").forEach(b=>b.onclick=()=>{msg(b.dataset.q,true);command(b.dataset.q)});
-document.querySelectorAll(".decisionGrid button").forEach(b=>b.onclick=async()=>{if(!buffer||!analysis)return;document.querySelectorAll(".decisionGrid button").forEach(x=>x.classList.remove("selected"));b.classList.add("selected");let p=autoRecipe(analysis),label=b.dataset.choice;
+document.querySelectorAll(".decisionGrid button").forEach(b=>b.onclick=async()=>{if(!buffer||!analysis){msg("Erst Audio laden.");return}document.querySelectorAll(".decisionGrid button").forEach(x=>x.classList.remove("selected"));b.classList.add("selected");$("decision").dataset.chosen="1";let p=aiRecipeAdjust(autoRecipe(analysis),aiLabels),label=b.dataset.choice;
 if(label==="loud"){p.gain+=2;p.comp=Math.min(100,p.comp+8)}
 if(label==="louder"){p.gain+=4;p.comp=Math.min(100,p.comp+14);p.limit=96;p.sat=Math.min(100,p.sat+6)}
 if(label==="bass"){p.bass+=4;p.comp=Math.min(100,p.comp+5)}
@@ -159,4 +188,4 @@ $("sourceA").onclick=()=>{$("sourceAudio").currentTime=0;$("sourceAudio").play()
 ["start","end","gain","bass","mid","treble","comp","sat","limit","stereo","reverb","echo","speed","pitch","lowcut","highcut"].forEach(id=>$(id).addEventListener("input",refreshOne));$("resultB").onclick=()=>{$("resultAudio").currentTime=0;$("resultAudio").play()};
 function renderHistory(){$("historyList").innerHTML=history.length?history.slice().reverse().map((x,i)=>'<div class="historyItem"><b>Version '+(history.length-i)+'</b> · '+x.name+'<div class="muted">'+x.time+'</div></div>').join(""):"Noch keine Render-Versionen."}
 document.querySelectorAll(".nav").forEach(b=>b.onclick=()=>{document.querySelectorAll(".nav").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.querySelectorAll(".view").forEach(v=>v.classList.add("hidden"));$(b.dataset.view).classList.remove("hidden")});
-$("newProject").onclick=()=>location.reload();document.querySelector(".easyButton").onclick=e=>{e.stopPropagation();$("file").click()};renderHistory();msg("Hi. Ich bin SOUND AI. Lade einen Song hoch – ich analysiere Lautheit, Dynamik, Bass, Helligkeit und Stille und baue daraus automatisch einen Remix.");
+$("newProject").onclick=()=>location.reload();$("pickFile")?.addEventListener("click",e=>{e.stopPropagation();$("file").click()});renderHistory();msg("Hi. Ich bin SOUND AI. Lade einen Song hoch – ich analysiere Lautheit, Dynamik, Bass, Helligkeit und Stille und baue daraus automatisch einen Remix.");
