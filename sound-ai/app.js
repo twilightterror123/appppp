@@ -1,5 +1,55 @@
 const $=id=>document.getElementById(id);
 let ctx=new AudioContext(), buffer=null, file=null, result=null, resultUrl=null, history=JSON.parse(localStorage.getItem("sound_ai_versions")||"[]"), analysis=null;
+let audioAI=null, aiLabels=[], aiReady=false, aiBusy=false;
+const AI_MODEL="Xenova/ast-finetuned-audioset-10-10-0.4593";
+async function loadAudioAI(){
+  if(audioAI||aiBusy)return audioAI;
+  aiBusy=true;
+  $("engineState").textContent="Audio-KI lädt …";
+  try{
+    const mod=await import("https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1");
+    const device=navigator.gpu?"webgpu":"wasm";
+    const dtype=device==="webgpu"?"q4f16":"q4";
+    audioAI=await mod.pipeline("audio-classification",AI_MODEL,{device,dtype,progress_callback:p=>{
+      if(p?.progress!=null)$("engineState").textContent="Audio-KI "+Math.round(p.progress)+"%";
+    }});
+    aiReady=true;$("engineState").textContent="Audio-KI bereit";return audioAI;
+  }catch(e){
+    console.warn(e);$("engineState").textContent="DSP-Modus · KI nicht geladen";return null;
+  }finally{aiBusy=false}
+}
+async function resample16k(buf){
+  const target=16000,frames=Math.ceil(buf.duration*target);
+  const off=new OfflineAudioContext(1,frames,target),src=off.createBufferSource(),mono=off.createBuffer(1,buf.length,buf.sampleRate),md=mono.getChannelData(0);
+  for(let i=0;i<buf.length;i++){let s=0;for(let c=0;c<buf.numberOfChannels;c++)s+=buf.getChannelData(c)[i];md[i]=s/buf.numberOfChannels}
+  src.buffer=mono;src.connect(off.destination);src.start();const out=await off.startRendering();return out.getChannelData(0);
+}
+async function aiUnderstand(buf){
+  const pipe=await loadAudioAI();if(!pipe)return null;
+  $("analysisBadge").textContent="AI analysiert …";
+  const data=await resample16k(buf),max=16000*10,start=Math.max(0,Math.floor((data.length-max)/2)),clip=data.slice(start,start+max);
+  const out=await pipe(clip,{top_k:8});aiLabels=out;
+  const top=out.slice(0,5).map(x=>x.label+" "+Math.round(x.score*100)+"%").join(" · ");
+  $("suggestions").innerHTML="<b>ECHTE AUDIO-KI:</b> "+top+"<br>Diese Modell-Ausgabe wird zusammen mit den Messwerten für den Auto-Mix verwendet.";
+  $("analysisBadge").textContent="AI-Profil fertig";
+  msg("Audio-KI analysiert: "+top);
+  return out;
+}
+function aiRecipeAdjust(base,labels){
+  const p={...base};if(!labels?.length)return p;
+  const score=(keys)=>labels.filter(x=>keys.some(k=>String(x.label).toLowerCase().includes(k))).reduce((a,x)=>a+x.score,0);
+  const music=score(["music","song","melody","instrument"]);
+  const drums=score(["drum","beat","percussion"]);
+  const bassAI=score(["bass","low frequency"]);
+  const speech=score(["speech","conversation","voice"]);
+  const noise=score(["noise","static","hum","wind"]);
+  if(speech>.45){p.bass=Math.min(p.bass,4);p.reverb=Math.min(p.reverb,2);p.echo=0;p.comp=Math.min(p.comp,58);p.treble=Math.max(p.treble,1)}
+  if(music>.35){p.stereo=Math.max(p.stereo,106);p.comp=Math.max(p.comp,52)}
+  if(drums>.25){p.comp=Math.min(78,Math.max(p.comp,62));p.sat=Math.max(p.sat,4)}
+  if(bassAI>.25)p.bass=Math.min(15,p.bass+3);
+  if(noise>.25){p.lowcut=Math.max(35,p.lowcut);p.highcut=Math.min(19000,p.highcut);p.comp=Math.min(70,p.comp+4)}
+  return p;
+}
 const presets={
 clean:{gain:0,bass:0,mid:0,treble:2,comp:28,sat:0,limit:88,stereo:100,reverb:3,echo:0,speed:100,pitch:0,lowcut:35,highcut:20000},
 loud:{gain:5,bass:4,mid:0,treble:2,comp:78,sat:8,limit:94,stereo:105,reverb:3,echo:1,speed:100,pitch:0,lowcut:35,highcut:19000},
@@ -37,7 +87,7 @@ function analyze(buf){
 }
 function renderWave(){const c=$("wave"),x=c.getContext("2d"),w=Math.max(800,c.clientWidth*2),h=Math.max(180,c.clientHeight*2);c.width=w;c.height=h;x.clearRect(0,0,w,h);const d=buffer.getChannelData(0),step=Math.max(1,Math.floor(d.length/w));x.beginPath();for(let i=0;i<w;i++){let mn=1,mx=-1;for(let j=0;j<step;j++){const v=d[i*step+j]||0;mn=Math.min(mn,v);mx=Math.max(mx,v)}x.moveTo(i,h/2+mn*h*.4);x.lineTo(i,h/2+mx*h*.4)}x.strokeStyle="#888";x.stroke();updateSelection()}
 function updateSelection(){if(!buffer)return;const s=+$("start").value/buffer.duration,e=+$("end").value/buffer.duration;$("sel").style.left=(s*100)+"%";$("sel").style.right=((1-e)*100)+"%"}
-async function load(f){if(!f||!f.type.startsWith("audio/"))return;file=f;ctx.close().catch(()=>{});ctx=new AudioContext();const ab=await f.arrayBuffer();buffer=await ctx.decodeAudioData(ab.slice(0));$("playerCard").hidden=false;$("fileName").textContent=f.name;$("fileMeta").textContent=buffer.duration.toFixed(2)+" s · "+buffer.numberOfChannels+" ch · "+Math.round(buffer.sampleRate)+" Hz";$("fileState").textContent=f.name;const u=URL.createObjectURL(f);$("sourceAudio").src=u;$("start").max=buffer.duration;$("end").max=buffer.duration;$("start").value=0;$("end").value=buffer.duration;refreshOne("start");refreshOne("end");analysis=analyze(buffer);showAnalysis();renderWave();apply(autoRecipe(analysis));$("analysisBadge").textContent="Automatik fertig";$("decision").hidden=false;$("advanced").hidden=true;$("suggestions").innerHTML="<b>SOUND AI hat alles vorbereitet.</b><br>Pitch, Speed, EQ, Lautheit, Kompression, Stereo und Schutz sind automatisch gesetzt. Wähle jetzt nur noch die Richtung.";msg("Audio analysiert. Ich habe die komplette Grundmischung automatisch vorbereitet. Wähle jetzt LOUD, LOUDER, BASS, BASS BOOST oder MORE BASS.");}
+async function load(f){if(!f||!f.type.startsWith("audio/"))return;file=f;ctx.close().catch(()=>{});ctx=new AudioContext();const ab=await f.arrayBuffer();buffer=await ctx.decodeAudioData(ab.slice(0));$("playerCard").hidden=false;$("fileName").textContent=f.name;$("fileMeta").textContent=buffer.duration.toFixed(2)+" s · "+buffer.numberOfChannels+" ch · "+Math.round(buffer.sampleRate)+" Hz";$("fileState").textContent=f.name;const u=URL.createObjectURL(f);$("sourceAudio").src=u;$("start").max=buffer.duration;$("end").max=buffer.duration;$("start").value=0;$("end").value=buffer.duration;refreshOne("start");refreshOne("end");analysis=analyze(buffer);showAnalysis();renderWave();const p=aiRecipeAdjust(autoRecipe(analysis),await aiUnderstand(buffer));apply(p);$("analysisBadge").textContent="AI + Audio-Profil fertig";$("decision").hidden=false;$("advanced").hidden=true;$("suggestions").innerHTML+="<br><br><b>Auto-Mix:</b> komplette Grundmischung wurde anhand von Modell + Messwerten vorbereitet.";msg("Die echte Audio-KI ist fertig. Jetzt entscheidest du nur noch: LOUD, LOUDER, BASS, BASS BOOST oder MORE BASS.");}
 function showAnalysis(){if(!analysis)return;const a=analysis;$("peak").textContent=a.peakDb.toFixed(1)+" dB";$("rms").textContent=a.rmsDb.toFixed(1)+" dB";$("bassMetric").textContent=Math.round(a.bassRatio*100)+"%";$("brightMetric").textContent=Math.round(a.brightness*100)+"%";$("aDuration").textContent=a.duration.toFixed(2)+" s";$("aPeak").textContent=a.peakDb.toFixed(2)+" dBFS";$("aRms").textContent=a.rmsDb.toFixed(2)+" dBFS";$("aDyn").textContent=a.dynamic.toFixed(2)+" dB";$("aBass").textContent=Math.round(a.bassRatio*100)+"%";$("aBright").textContent=Math.round(a.brightness*100)+"%";$("aSilence").textContent=Math.round(a.silenceRatio*100)+"%";$("aChannels").textContent=a.channels}
 async function render(){
  if(!buffer){msg("Lade zuerst Audio.");return}const s=+$("start").value,e=+$("end").value;if(e<=s+.05){msg("Das Ende muss hinter dem Start liegen.");return}
