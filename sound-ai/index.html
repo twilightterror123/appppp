@@ -42,7 +42,7 @@
 
       <section class="card decision" id="decision" hidden>
   <div class="sectionHead"><h2>Wie soll dein Sound werden?</h2><span class="badge" id="autoStatus">SOUND AI hat alles automatisch analysiert</span></div>
-  <p class="muted">Pitch, Tempo, EQ, Lautheit, Kompression, Stereo und Schutz sind bereits automatisch vorbereitet. Du entscheidest nur die Richtung:</p>
+  <p class="muted">Ich habe den Sound bereits komplett vorbereitet. Du musst nur sagen, in welche Richtung er gehen soll:</p>
   <div class="decisionGrid">
     <button data-choice="loud">LOUD</button>
     <button data-choice="louder">LOUDER</button>
@@ -50,9 +50,9 @@
     <button data-choice="bassboost">BASS BOOST</button>
     <button data-choice="morebass">MORE BASS</button>
   </div>
-  <div class="muted tiny">Nach deiner Auswahl rendert SOUND AI automatisch die erste Version.</div>
+  <div class="muted tiny">Ein Klick genügt. SOUND AI rendert danach automatisch.</div>
 </section>
-<section class="card controls" id="advanced" hidden>
+<section class="card controls" id="advanced" hidden><div class="easyAdvancedHead"><b>Feineinstellungen</b><span class="muted">Nur öffnen, wenn du selbst schrauben willst.</span></div>
         <div class="sectionHead"><h2>Mix</h2><button id="autoTune" class="smallBtn">⚡ Auto</button></div>
         <div class="controlGrid">
           <label>Input <output id="gainOut">0 dB</output><input id="gain" type="range" min="-8" max="12" step=".5" value="0"></label>
