@@ -40,17 +40,19 @@
         </div>
       </section>
 
-      <section class="card">
-        <div class="sectionHead"><h2>Auto-Mix</h2><span id="analysisBadge" class="badge">warte auf Audio</span></div>
-        <div class="presets">
-          <button data-preset="auto">AUTO</button><button data-preset="clean">CLEAN</button><button data-preset="loud">LOUD</button><button data-preset="bass">BASS</button><button data-preset="tiktok">TIKTOK</button><button data-preset="club">CLUB</button><button data-preset="slowed">SLOWED</button><button data-preset="night">NIGHTCORE</button>
-        </div>
-        <div class="meterGrid">
-          <div><span>Peak</span><b id="peak">—</b></div><div><span>RMS</span><b id="rms">—</b></div><div><span>Bass</span><b id="bassMetric">—</b></div><div><span>Bright</span><b id="brightMetric">—</b></div>
-        </div>
-      </section>
-
-      <section class="card controls">
+      <section class="card decision" id="decision" hidden>
+  <div class="sectionHead"><h2>Wie soll dein Sound werden?</h2><span class="badge" id="autoStatus">SOUND AI hat alles automatisch analysiert</span></div>
+  <p class="muted">Pitch, Tempo, EQ, Lautheit, Kompression, Stereo und Schutz sind bereits automatisch vorbereitet. Du entscheidest nur die Richtung:</p>
+  <div class="decisionGrid">
+    <button data-choice="loud">LOUD</button>
+    <button data-choice="louder">LOUDER</button>
+    <button data-choice="bass">BASS</button>
+    <button data-choice="bassboost">BASS BOOST</button>
+    <button data-choice="morebass">MORE BASS</button>
+  </div>
+  <div class="muted tiny">Nach deiner Auswahl rendert SOUND AI automatisch die erste Version.</div>
+</section>
+<section class="card controls" id="advanced" hidden>
         <div class="sectionHead"><h2>Mix</h2><button id="autoTune" class="smallBtn">⚡ Auto</button></div>
         <div class="controlGrid">
           <label>Input <output id="gainOut">0 dB</output><input id="gain" type="range" min="-8" max="12" step=".5" value="0"></label>
