@@ -26,8 +26,8 @@
     <div class="left">
       <section id="drop" class="drop card">
         <input id="file" type="file" accept="audio/*">
-        <div class="dropBig">Audio hineinziehen</div>
-        <div class="muted">MP3 · WAV · M4A · OGG · direkte Browser-Verarbeitung</div>
+        <div class="dropBig">Audio auswählen</div>
+        <div class="muted">Datei wählen oder hier hineinziehen · SOUND AI startet sofort</div><button type="button" class="easyButton" id="pickFile">DATEI AUSWÄHLEN</button>
       </section>
 
       <section class="card player" id="playerCard" hidden>
@@ -88,7 +88,7 @@
 
     <aside class="right">
       <section class="card bot">
-        <div class="botHead"><div><b>SOUND AI</b><div class="muted">Sound Assistant</div></div><span class="dot"></span></div>
+        <div class="botHead"><div><b>SOUND AI</b><div class="muted" id="aiState">Sound Assistant · bereit</div></div><span class="dot"></span></div>
         <div id="chat" class="chat"></div>
         <div class="quick"><button data-q="mach es lauter">lauter</button><button data-q="mehr bass">mehr bass</button><button data-q="cleaner">cleaner</button><button data-q="mehr druck">mehr Druck</button><button data-q="weniger hall">weniger Hall</button></div>
         <div class="chatInput"><input id="chatInput" placeholder="Sag SOUND AI, was ich ändern soll …"><button id="chatSend">↑</button></div>
